@@ -569,6 +569,11 @@ window.addEventListener('resize', drawCircuits);
 // ===== PANELS =====
 document.querySelectorAll('.hub-node').forEach(n => {
   n.addEventListener('click', () => {
+    // Redirect Gospel Hub to Instagram
+    if (n.dataset.panel === 'gospel') {
+      window.open('https://www.instagram.com/_takenothought?igsh=MWhyZjI2aGljbzZvMw==', '_blank');
+      return;
+    }
     // Redirect Sticker Hub to Etsy shop
     if (n.dataset.panel === 'sticker') {
       window.open('https://www.etsy.com/shop/PrintsByPorkins?dd_referrer=https%3A%2F%2Fwww.google.com%2F', '_blank');
