@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JMO Universe - 3D Portfolio Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #000;
+            color: #fff;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        #header {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: auto;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00f0ff, #ff00f0, #00ff88);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient 3s ease infinite;
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #00f0ff;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        #navigation {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            pointer-events: auto;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            background: rgba(0, 240, 255, 0.1);
+            border: 2px solid #00f0ff;
+            color: #00f0ff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-button:hover {
+            background: rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+            transform: translateY(-2px);
+        }
+
+        #info-panel {
+            position: absolute;
+            top: 50%;
+            right: 50px;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00f0ff;
+            padding: 30px;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #info-panel.active {
+            opacity: 1;
+        }
+
+        #info-panel h2 {
+            color: #00f0ff;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        #info-panel p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        #info-panel ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        #info-panel ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            color: #00f0ff;
+        }
+
+        #info-panel ul li:last-child {
+            border-bottom: none;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #00f0ff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .close-button:hover {
+            color: #ff00f0;
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: rgba(0, 240, 255, 0.6);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            #navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-button {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+
+            #info-panel {
+                right: 20px;
+                left: 20px;
+                max-width: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div id="ui-overlay">
+        <div id="header">
+            <h1>JMO UNIVERSE</h1>
+            <p class="subtitle">Interactive 3D Portfolio Hub</p>
+        </div>
+
+        <div id="navigation">
+            <button class="nav-button" onclick="showInfo('about')">About</button>
+            <button class="nav-button" onclick="showInfo('projects')">Projects</button>
+            <button class="nav-button" onclick="showInfo('skills')">Skills</button>
+            <button class="nav-button" onclick="showInfo('contact')">Contact</button>
+        </div>
+
+        <div id="info-panel">
+            <button class="close-button" onclick="closeInfo()">&times;</button>
+            <div id="panel-content"></div>
+        </div>
+
+        <div id="instructions">
+            Click and drag to rotate • Scroll to zoom
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Three.js Scene Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 1);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        scene.add(ambientLight);
+
+        const pointLight1 = new THREE.PointLight(0x00f0ff, 2, 100);
+        pointLight1.position.set(10, 10, 10);
+        scene.add(pointLight1);
+
+        const pointLight2 = new THREE.PointLight(0xff00f0, 2, 100);
+        pointLight2.position.set(-10, -10, 10);
+        scene.add(pointLight2);
+
+        const pointLight3 = new THREE.PointLight(0x00ff88, 2, 100);
+        pointLight3.position.set(0, 0, -10);
+        scene.add(pointLight3);
+
+        // Create central sphere with wireframe
+        const sphereGeometry = new THREE.SphereGeometry(2, 32, 32);
+        const sphereMaterial = new THREE.MeshPhongMaterial({
+            color: 0x00f0ff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.6
+        });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        scene.add(sphere);
+
+        // Create orbiting particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 2000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 50;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.05,
+            color: 0x00f0ff,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // Create orbiting rings
+        const rings = [];
+        for(let i = 0; i < 3; i++) {
+            const ringGeometry = new THREE.TorusGeometry(3 + i, 0.05, 16, 100);
+            const ringMaterial = new THREE.MeshPhongMaterial({
+                color: [0x00f0ff, 0xff00f0, 0x00ff88][i],
+                transparent: true,
+                opacity: 0.6
+            });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            ring.rotation.x = Math.random() * Math.PI;
+            ring.rotation.y = Math.random() * Math.PI;
+            rings.push(ring);
+            scene.add(ring);
+        }
+
+        // Create floating cubes
+        const cubes = [];
+        for(let i = 0; i < 5; i++) {
+            const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+            const cubeMaterial = new THREE.MeshPhongMaterial({
+                color: Math.random() * 0xffffff,
+                transparent: true,
+                opacity: 0.7
+            });
+            const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            cube.position.set(
+                (Math.random() - 0.5) * 10,
+                (Math.random() - 0.5) * 10,
+                (Math.random() - 0.5) * 10
+            );
+            cubes.push(cube);
+            scene.add(cube);
+        }
+
+        camera.position.z = 15;
+
+        // Mouse interaction
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Mouse wheel zoom
+        document.addEventListener('wheel', (event) => {
+            camera.position.z += event.deltaY * 0.01;
+            camera.position.z = Math.max(5, Math.min(30, camera.position.z));
+        });
+
+        // Animation loop
+        let time = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+
+            // Rotate main sphere
+            sphere.rotation.x += 0.005;
+            sphere.rotation.y += 0.005;
+
+            // Rotate rings
+            rings.forEach((ring, index) => {
+                ring.rotation.x += 0.003 * (index + 1);
+                ring.rotation.y += 0.002 * (index + 1);
+            });
+
+            // Animate cubes
+            cubes.forEach((cube, index) => {
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                cube.position.y += Math.sin(time + index) * 0.02;
+            });
+
+            // Rotate particles
+            particlesMesh.rotation.y += 0.001;
+            particlesMesh.rotation.x += 0.0005;
+
+            // Animate lights
+            pointLight1.position.x = Math.sin(time) * 10;
+            pointLight1.position.z = Math.cos(time) * 10;
+
+            pointLight2.position.x = Math.cos(time * 0.7) * 10;
+            pointLight2.position.y = Math.sin(time * 0.7) * 10;
+
+            // Mouse interaction
+            targetX = mouseX * 0.5;
+            targetY = mouseY * 0.5;
+
+            sphere.rotation.y += 0.05 * (targetX - sphere.rotation.y);
+            sphere.rotation.x += 0.05 * (targetY - sphere.rotation.x);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // UI Interaction Functions
+        const infoContent = {
+            about: `
+                <h2>About JMO</h2>
+                <p>Welcome to my interactive 3D portfolio universe! I'm a creative developer passionate about building immersive web experiences that push the boundaries of what's possible in the browser.</p>
+                <p>This space represents the intersection of technology, art, and innovation - where ideas come to life in three dimensions.</p>
+            `,
+            projects: `
+                <h2>Featured Projects</h2>
+                <ul>
+                    <li>🌌 3D Universe Portfolio - Interactive Three.js experience</li>
+                    <li>🎮 WebGL Game Engine - Custom game framework</li>
+                    <li>🎨 Generative Art Platform - AI-powered creativity</li>
+                    <li>🚀 Space Explorer - VR web experience</li>
+                    <li>⚡ Real-time Visualizer - Audio-reactive animations</li>
+                </ul>
+            `,
+            skills: `
+                <h2>Technical Skills</h2>
+                <ul>
+                    <li>Three.js & WebGL</li>
+                    <li>JavaScript / TypeScript</li>
+                    <li>React / Next.js</li>
+                    <li>Node.js / Express</li>
+                    <li>GLSL Shaders</li>
+                    <li>3D Modeling & Animation</li>
+                    <li>UI/UX Design</li>
+                </ul>
+            `,
+            contact: `
+                <h2>Get In Touch</h2>
+                <p>Interested in collaborating on a project or just want to say hello?</p>
+                <ul>
+                    <li>📧 Email: hello@jmo-universe.com</li>
+                    <li>💼 LinkedIn: /in/jmo-universe</li>
+                    <li>🐙 GitHub: github.com/jmo-universe</li>
+                    <li>🐦 Twitter: @jmo_universe</li>
+                </ul>
+            `
+        };
+
+        function showInfo(section) {
+            const panel = document.getElementById('info-panel');
+            const content = document.getElementById('panel-content');
+            content.innerHTML = infoContent[section];
+            panel.classList.add('active');
+        }
+
+        function closeInfo() {
+            const panel = document.getElementById('info-panel');
+            panel.classList.remove('active');
+        }
+
+        // Easter egg: Press 'E' for extra effects
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'e' || e.key === 'E') {
+                particlesMaterial.color.setHex(Math.random() * 0xffffff);
+            }
+        });
+    </script>
+</body>
+</html>
