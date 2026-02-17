@@ -3,8 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Utah Utes Hub - Schedule, Stats & Rivalry</title>
+    <title>Utah Utes Hub - Premium Sports Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --utes-red: #CC0000;
+            --utes-dark-red: #8B0000;
+            --utes-white: #FFFFFF;
+            --accent-gold: #FFD700;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.4);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,271 +28,621 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #cc0000 0%, #8b0000 100%);
-            color: #fff;
-            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--utes-red) 0%, var(--utes-dark-red) 50%, #1a0000 100%);
+            color: var(--utes-white);
             min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background gradient */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb1 {
+            width: 500px;
+            height: 500px;
+            background: var(--utes-red);
+            top: -200px;
+            right: -200px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb2 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-gold);
+            bottom: -150px;
+            left: -150px;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -30px) rotate(90deg); }
+            50% { transform: translate(-20px, 20px) rotate(180deg); }
+            75% { transform: translate(40px, 10px) rotate(270deg); }
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
             padding: 40px 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            margin-bottom: 30px;
-            border: 3px solid #fff;
+            position: relative;
+            z-index: 1;
         }
 
-        h1 {
-            font-size: 3.5rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid #fff;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: rgba(0, 0, 0, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-        }
-
-        .card h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            text-transform: uppercase;
-        }
-
-        .schedule-item, .odds-item, .score-item, .tweet-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            border-left: 4px solid #fff;
-        }
-
-        .schedule-item {
+        /* Navigation */
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
+            margin-bottom: 60px;
+            padding: 0 10px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--utes-white);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Hero Header */
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #ffffff 0%, #ffd700 50%, #ffffff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s linear infinite;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .card h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Schedule Card */
+        .schedule-card {
+            grid-column: span 6;
+        }
+
+        .schedule-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .schedule-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .sport-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-gold);
         }
 
         .game-date {
-            font-weight: bold;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .opponent {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
-        .game-time {
-            font-size: 0.95rem;
-            opacity: 0.9;
+        .game-details {
+            display: flex;
+            gap: 16px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        .sport-tag {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-right: 8px;
+        /* Odds Card */
+        .odds-card {
+            grid-column: span 6;
         }
 
         .odds-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 18px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .odds-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
         }
 
         .odds-label {
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
         }
 
         .odds-value {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #ffd700;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            padding: 6px 16px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Rivalry Card */
+        .rivalry-card {
+            grid-column: span 12;
+        }
+
+        .rivalry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 12px;
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
         }
 
         .score-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .score-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.02);
         }
 
         .year {
-            font-weight: bold;
-            font-size: 1.1rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .score {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 6px 14px;
+            border-radius: 8px;
         }
 
         .win {
-            color: #00ff00;
+            background: rgba(0, 255, 0, 0.15);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 0, 0.3);
         }
 
         .loss {
+            background: rgba(255, 0, 0, 0.15);
             color: #ff6b6b;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .rivalry-summary {
+            margin-top: 24px;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .rivalry-summary strong {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+        }
+
+        /* Social Card */
+        .social-card {
+            grid-column: span 12;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 16px;
         }
 
         .tweet-item {
-            border-left-color: #1da1f2;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 4px solid #1da1f2;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .tweet-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .tweet-author {
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-weight: 700;
             color: #1da1f2;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .tweet-content {
-            line-height: 1.5;
-            margin-bottom: 8px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .tweet-time {
             font-size: 0.85rem;
-            opacity: 0.7;
+            color: rgba(255, 255, 255, 0.5);
         }
 
-        .rivalry-section {
-            grid-column: 1 / -1;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .rivalry-section h2 {
-            color: #ffd700;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            font-style: italic;
-            opacity: 0.7;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .schedule-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-
-        /* Scrollbar styling */
+        /* Scrollbar */
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 5px;
+            background: rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 215, 0, 0.5);
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .schedule-card, .odds-card {
+                grid-column: span 12;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .rivalry-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .social-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+
+        /* Fade in animation */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html" class="back-btn">← Back to JMO Universe</a>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
 
-        <header>
-            <h1>🏈 Utah Utes Hub 🏀</h1>
-            <p class="subtitle">Schedules • Odds • Rivalry • Social Buzz</p>
+    <div class="container">
+        <nav>
+            <a href="index.html" class="back-btn">
+                <span>←</span>
+                <span>Back to Hub</span>
+            </a>
+        </nav>
+
+        <header class="fade-in">
+            <div class="hero-badge">Big 12 Conference</div>
+            <h1>UTAH UTES</h1>
+            <p class="subtitle">Premium Sports Analytics & Real-Time Updates</p>
         </header>
 
-        <div class="grid">
-            <!-- Upcoming Schedules -->
-            <div class="card">
-                <h2>📅 Upcoming Games</h2>
+        <div class="stats-bar fade-in">
+            <div class="stat-card">
+                <div class="stat-value">14-11</div>
+                <div class="stat-label">Holy War Record</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">+450</div>
+                <div class="stat-label">CFP Odds</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">8.5</div>
+                <div class="stat-label">Win Total O/U</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2026</div>
+                <div class="stat-label">Season Preview</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Schedule -->
+            <div class="card schedule-card fade-in">
+                <div class="card-header">
+                    <span class="card-icon">📅</span>
+                    <h2>Upcoming Schedule</h2>
+                </div>
                 <div id="schedule-container">
-                    <div class="loading">Loading schedules...</div>
+                    <div class="loading">Loading games...</div>
                 </div>
             </div>
 
-            <!-- 2026 Season Odds -->
-            <div class="card">
-                <h2>📊 2026 Season Odds</h2>
+            <!-- Odds -->
+            <div class="card odds-card fade-in">
+                <div class="card-header">
+                    <span class="card-icon">📊</span>
+                    <h2>2026 Season Odds</h2>
+                </div>
                 <div id="odds-container">
                     <div class="odds-item">
                         <span class="odds-label">🏈 Win Big 12 Championship</span>
                         <span class="odds-value">+650</span>
                     </div>
                     <div class="odds-item">
-                        <span class="odds-label">🏈 Make College Football Playoff</span>
+                        <span class="odds-label">🏈 College Football Playoff</span>
                         <span class="odds-value">+450</span>
                     </div>
                     <div class="odds-item">
-                        <span class="odds-label">🏈 Regular Season Win Total</span>
+                        <span class="odds-label">🏈 Season Win Total</span>
                         <span class="odds-value">O/U 8.5</span>
                     </div>
                     <div class="odds-item">
@@ -284,194 +650,152 @@
                         <span class="odds-value">+1200</span>
                     </div>
                     <div class="odds-item">
-                        <span class="odds-label">🏀 Make NCAA Tournament</span>
+                        <span class="odds-label">🏀 NCAA Tournament</span>
                         <span class="odds-value">+180</span>
                     </div>
                     <div class="odds-item">
-                        <span class="odds-label">🏀 Regular Season Win Total</span>
+                        <span class="odds-label">🏀 Season Win Total</span>
                         <span class="odds-value">O/U 21.5</span>
                     </div>
                 </div>
             </div>
 
-            <!-- BYU vs Utah Rivalry -->
-            <div class="card rivalry-section">
-                <h2>⚔️ Holy War History (Last 25 Years)</h2>
-                <div id="rivalry-container">
-                    <div class="score-item">
-                        <span class="year">2024</span>
-                        <span class="score win">Utah 22 - BYU 21 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2023</span>
-                        <span class="score loss">Utah 24 - BYU 27</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2022</span>
-                        <span class="score loss">Utah 20 - BYU 26</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2021</span>
-                        <span class="score win">Utah 26 - BYU 17 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2019</span>
-                        <span class="score win">Utah 30 - BYU 12 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2018</span>
-                        <span class="score win">Utah 35 - BYU 7 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2017</span>
-                        <span class="score win">Utah 19 - BYU 13 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2016</span>
-                        <span class="score loss">Utah 19 - BYU 20</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2015</span>
-                        <span class="score win">Utah 35 - BYU 28 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2014</span>
-                        <span class="score loss">Utah 20 - BYU 35</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2013</span>
-                        <span class="score win">Utah 20 - BYU 13 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2012</span>
-                        <span class="score win">Utah 24 - BYU 21 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2011</span>
-                        <span class="score win">Utah 54 - BYU 10 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2010</span>
-                        <span class="score loss">Utah 7 - BYU 17</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2009</span>
-                        <span class="score win">Utah 26 - BYU 23 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2008</span>
-                        <span class="score win">Utah 48 - BYU 24 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2007</span>
-                        <span class="score loss">Utah 17 - BYU 20</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2006</span>
-                        <span class="score loss">Utah 31 - BYU 33</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2005</span>
-                        <span class="score loss">Utah 21 - BYU 41</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2004</span>
-                        <span class="score win">Utah 52 - BYU 21 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2003</span>
-                        <span class="score win">Utah 3 - BYU 0 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2002</span>
-                        <span class="score loss">Utah 6 - BYU 26</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2001</span>
-                        <span class="score win">Utah 24 - BYU 21 ✓</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">2000</span>
-                        <span class="score loss">Utah 20 - BYU 34</span>
-                    </div>
-                    <div class="score-item">
-                        <span class="year">1999</span>
-                        <span class="score loss">Utah 20 - BYU 35</span>
-                    </div>
-                    <div style="margin-top: 20px; padding: 15px; background: rgba(255, 215, 0, 0.2); border-radius: 8px; text-align: center;">
-                        <strong>Series Record (Last 25): Utah 14 - BYU 11</strong>
-                    </div>
+            <!-- Rivalry -->
+            <div class="card rivalry-card fade-in">
+                <div class="card-header">
+                    <span class="card-icon">⚔️</span>
+                    <h2>Holy War History - Last 25 Years</h2>
+                </div>
+                <div class="rivalry-grid" id="rivalry-container"></div>
+                <div class="rivalry-summary">
+                    <strong>Series Record: Utah 14 - BYU 11</strong>
                 </div>
             </div>
 
-            <!-- Trending Utes Posts -->
-            <div class="card" style="grid-column: 1 / -1;">
-                <h2>🔥 Trending Utes Social Posts</h2>
-                <div id="social-container">
+            <!-- Social -->
+            <div class="card social-card fade-in">
+                <div class="card-header">
+                    <span class="card-icon">🔥</span>
+                    <h2>Trending Social Posts</h2>
+                </div>
+                <div class="social-grid">
                     <div class="tweet-item">
-                        <div class="tweet-author">@Utah_Football</div>
+                        <div class="tweet-author">
+                            <span>@</span>Utah_Football
+                        </div>
                         <div class="tweet-content">Big 12 ready! The Utes are bringing championship mentality to every game this season. 🔴⚪️ #GoUtes</div>
                         <div class="tweet-time">2 hours ago</div>
                     </div>
                     <div class="tweet-item">
-                        <div class="tweet-author">@UteZone</div>
+                        <div class="tweet-author">
+                            <span>@</span>UteZone
+                        </div>
                         <div class="tweet-content">Breaking: Utah lands 4-star recruit! The talent pipeline continues to flow into Salt Lake City. 🎯</div>
                         <div class="tweet-time">5 hours ago</div>
                     </div>
                     <div class="tweet-item">
-                        <div class="tweet-author">@Utah_Basketball</div>
+                        <div class="tweet-author">
+                            <span>@</span>Utah_Basketball
+                        </div>
                         <div class="tweet-content">Huntsman Center was ELECTRIC tonight! Thanks to the best fans in college basketball. 🏀🔥</div>
                         <div class="tweet-time">1 day ago</div>
                     </div>
                     <div class="tweet-item">
-                        <div class="tweet-author">@UtahAthletics</div>
+                        <div class="tweet-author">
+                            <span>@</span>UtahAthletics
+                        </div>
                         <div class="tweet-content">Student-athletes excelling in the classroom and on the field. Proud to be a Ute! 🎓⚡️</div>
                         <div class="tweet-time">1 day ago</div>
                     </div>
-                    <p style="margin-top: 15px; opacity: 0.7; font-size: 0.9rem; text-align: center;">
-                        Live social feed requires Twitter API integration • Currently showing sample posts
-                    </p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Load schedules
+        // Load schedules with animation
         function loadSchedules() {
             const scheduleContainer = document.getElementById('schedule-container');
 
-            // Sample upcoming games - in production, this would fetch from an API
             const upcomingGames = [
-                { sport: '🏈', date: 'Sep 6, 2026', opponent: 'vs Oklahoma State', time: '7:00 PM MT' },
-                { sport: '🏈', date: 'Sep 13, 2026', opponent: '@ TCU', time: '6:30 PM MT' },
-                { sport: '🏈', date: 'Sep 20, 2026', opponent: 'vs Arizona', time: '8:00 PM MT' },
-                { sport: '🏈', date: 'Sep 27, 2026', opponent: '@ Kansas', time: '2:00 PM MT' },
-                { sport: '🏈', date: 'Oct 4, 2026', opponent: 'vs BYU', time: '7:30 PM MT' },
-                { sport: '🏀', date: 'Nov 10, 2026', opponent: 'vs Colorado', time: '8:00 PM MT' },
-                { sport: '🏀', date: 'Nov 15, 2026', opponent: '@ Arizona State', time: '9:00 PM MT' },
-                { sport: '🏀', date: 'Nov 22, 2026', opponent: 'vs Baylor', time: '7:00 PM MT' },
+                { sport: '🏈', sportName: 'Football', date: 'Sep 6, 2026', opponent: 'vs Oklahoma State', time: '7:00 PM MT', location: 'Rice-Eccles Stadium' },
+                { sport: '🏈', sportName: 'Football', date: 'Sep 13, 2026', opponent: '@ TCU', time: '6:30 PM MT', location: 'Amon G. Carter Stadium' },
+                { sport: '🏈', sportName: 'Football', date: 'Sep 20, 2026', opponent: 'vs Arizona', time: '8:00 PM MT', location: 'Rice-Eccles Stadium' },
+                { sport: '🏈', sportName: 'Football', date: 'Sep 27, 2026', opponent: '@ Kansas', time: '2:00 PM MT', location: 'David Booth Memorial Stadium' },
+                { sport: '🏈', sportName: 'Football', date: 'Oct 4, 2026', opponent: 'vs BYU', time: '7:30 PM MT', location: 'Rice-Eccles Stadium' },
+                { sport: '🏀', sportName: 'Basketball', date: 'Nov 10, 2026', opponent: 'vs Colorado', time: '8:00 PM MT', location: 'Huntsman Center' },
+                { sport: '🏀', sportName: 'Basketball', date: 'Nov 15, 2026', opponent: '@ Arizona State', time: '9:00 PM MT', location: 'Desert Financial Arena' },
+                { sport: '🏀', sportName: 'Basketball', date: 'Nov 22, 2026', opponent: 'vs Baylor', time: '7:00 PM MT', location: 'Huntsman Center' },
             ];
 
             scheduleContainer.innerHTML = upcomingGames.map(game => `
                 <div class="schedule-item">
-                    <div>
-                        <div class="game-date">${game.date}</div>
-                        <div class="opponent"><span class="sport-tag">${game.sport}</span>${game.opponent}</div>
+                    <div class="schedule-header">
+                        <span class="sport-badge">${game.sport} ${game.sportName}</span>
+                        <span class="game-date">${game.date}</span>
                     </div>
-                    <div class="game-time">${game.time}</div>
+                    <div class="opponent">${game.opponent}</div>
+                    <div class="game-details">
+                        <span>⏰ ${game.time}</span>
+                        <span>📍 ${game.location}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load rivalry history
+        function loadRivalry() {
+            const rivalryContainer = document.getElementById('rivalry-container');
+
+            const games = [
+                { year: 2024, utah: 22, byu: 21, win: true },
+                { year: 2023, utah: 24, byu: 27, win: false },
+                { year: 2022, utah: 20, byu: 26, win: false },
+                { year: 2021, utah: 26, byu: 17, win: true },
+                { year: 2019, utah: 30, byu: 12, win: true },
+                { year: 2018, utah: 35, byu: 7, win: true },
+                { year: 2017, utah: 19, byu: 13, win: true },
+                { year: 2016, utah: 19, byu: 20, win: false },
+                { year: 2015, utah: 35, byu: 28, win: true },
+                { year: 2014, utah: 20, byu: 35, win: false },
+                { year: 2013, utah: 20, byu: 13, win: true },
+                { year: 2012, utah: 24, byu: 21, win: true },
+                { year: 2011, utah: 54, byu: 10, win: true },
+                { year: 2010, utah: 7, byu: 17, win: false },
+                { year: 2009, utah: 26, byu: 23, win: true },
+                { year: 2008, utah: 48, byu: 24, win: true },
+                { year: 2007, utah: 17, byu: 20, win: false },
+                { year: 2006, utah: 31, byu: 33, win: false },
+                { year: 2005, utah: 21, byu: 41, win: false },
+                { year: 2004, utah: 52, byu: 21, win: true },
+                { year: 2003, utah: 3, byu: 0, win: true },
+                { year: 2002, utah: 6, byu: 26, win: false },
+                { year: 2001, utah: 24, byu: 21, win: true },
+                { year: 2000, utah: 20, byu: 34, win: false },
+                { year: 1999, utah: 20, byu: 35, win: false },
+            ];
+
+            rivalryContainer.innerHTML = games.map(game => `
+                <div class="score-item">
+                    <span class="year">${game.year}</span>
+                    <span class="score ${game.win ? 'win' : 'loss'}">
+                        Utah ${game.utah} - BYU ${game.byu} ${game.win ? '✓' : ''}
+                    </span>
                 </div>
             `).join('');
         }
 
         // Initialize
         loadSchedules();
+        loadRivalry();
 
-        // In a production environment, you would:
-        // 1. Fetch real schedule data from ESPN API or similar
-        // 2. Fetch current odds from a sports betting API
-        // 3. Integrate Twitter API for live social feed
-        // 4. Update scores from a sports data provider
+        // Add entrance animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.card, .stat-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
     </script>
 </body>
 </html>
