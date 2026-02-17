@@ -181,6 +181,45 @@
     background: var(--cyan); border-radius: 50%; opacity: 0.3;
   }
 
+  /* Speech Bubble */
+  .head-img {
+    cursor: pointer;
+  }
+  .speech-bubble {
+    position: absolute;
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: rgba(255, 255, 255, 0.95);
+    color: #000;
+    padding: 16px 24px;
+    border-radius: 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+  }
+  .speech-bubble.show {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid rgba(255, 255, 255, 0.95);
+  }
+
   /* Circuits SVG */
   .circuit-svg {
     position: absolute; inset: 0; z-index: 5;
@@ -333,6 +372,7 @@
     <div class="head-container" id="headContainer">
       <div class="head-glow" id="headGlow"><img id="headGlowImg" alt="" /></div>
       <img class="head-img" id="headImg" alt="Portrait" />
+      <div class="speech-bubble" id="speechBubble"></div>
       <div class="head-ring"></div>
       <div class="head-orbit" id="headOrbit"></div>
     </div>
@@ -594,6 +634,36 @@ document.querySelectorAll('.panel-overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) closePanel(); });
 });
 document.addEventListener('keydown', e => { if (e.key==='Escape') closePanel(); });
+
+// ===== SPEECH BUBBLE =====
+const quotes = [
+  "Great googly moogely",
+  "No, I don't have any produce you can borrow",
+  "Avada Kadabra!",
+  "Thanks m'dude!",
+  "Guess who needs another ride to the mechanic!!",
+  "Oh…Oh no….",
+  "Go Utes!"
+];
+let currentQuoteIndex = 0;
+const speechBubble = document.getElementById('speechBubble');
+const headImgElement = document.getElementById('headImg');
+
+headImgElement.addEventListener('click', () => {
+  // Set the current quote
+  speechBubble.textContent = quotes[currentQuoteIndex];
+
+  // Show the speech bubble
+  speechBubble.classList.add('show');
+
+  // Move to next quote
+  currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+
+  // Hide after 3 seconds
+  setTimeout(() => {
+    speechBubble.classList.remove('show');
+  }, 3000);
+});
 </script>
 </body>
 </html>
