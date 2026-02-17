@@ -575,9 +575,76 @@
                 transform: translateY(0);
             }
         }
+
+        /* Music Control */
+        .music-control {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 215, 0, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .music-control.playing {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 30px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        .music-icon {
+            font-size: 1.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .music-control {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .music-icon {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Background Audio -->
+    <audio id="fightSong" loop>
+        <source src="https://www.utahutes.com/sports/2015/6/9/sports_m-footbl_spec-rel_060915aaa.aspx?path=general" type="audio/mpeg">
+        <!-- Fallback: Users can replace with local file -->
+        <source src="utah-fight-song.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music Control -->
+    <div class="music-control" id="musicControl" onclick="toggleMusic()">
+        <span class="music-icon" id="musicIcon">🎵</span>
+    </div>
+
     <div class="orb orb1"></div>
     <div class="orb orb2"></div>
 
@@ -796,6 +863,61 @@
                 card.style.animationDelay = `${index * 0.1}s`;
             });
         });
+
+        // ===== MUSIC CONTROL =====
+        const fightSong = document.getElementById('fightSong');
+        const musicControl = document.getElementById('musicControl');
+        const musicIcon = document.getElementById('musicIcon');
+        let isPlaying = false;
+
+        // Try to autoplay when page loads
+        window.addEventListener('load', () => {
+            // Attempt autoplay
+            const playPromise = fightSong.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Autoplay started successfully
+                    isPlaying = true;
+                    musicControl.classList.add('playing');
+                    musicIcon.textContent = '🔊';
+                }).catch(error => {
+                    // Autoplay was blocked - show play button
+                    console.log('Autoplay blocked. Click the music button to play.');
+                    isPlaying = false;
+                    musicControl.classList.remove('playing');
+                    musicIcon.textContent = '🎵';
+                });
+            }
+        });
+
+        // Toggle music on/off
+        function toggleMusic() {
+            if (isPlaying) {
+                fightSong.pause();
+                isPlaying = false;
+                musicControl.classList.remove('playing');
+                musicIcon.textContent = '🔇';
+            } else {
+                fightSong.play();
+                isPlaying = true;
+                musicControl.classList.add('playing');
+                musicIcon.textContent = '🔊';
+            }
+        }
+
+        // Also try to play on first user interaction if autoplay failed
+        document.addEventListener('click', () => {
+            if (!isPlaying && fightSong.paused) {
+                fightSong.play().then(() => {
+                    isPlaying = true;
+                    musicControl.classList.add('playing');
+                    musicIcon.textContent = '🔊';
+                }).catch(() => {
+                    // Still blocked or error
+                });
+            }
+        }, { once: true });
     </script>
 </body>
 </html>
