@@ -579,6 +579,11 @@ document.querySelectorAll('.hub-node').forEach(n => {
       window.open('https://www.etsy.com/shop/PrintsByPorkins?dd_referrer=https%3A%2F%2Fwww.google.com%2F', '_blank');
       return;
     }
+    // Redirect Utah Utes Hub to dedicated site
+    if (n.dataset.panel === 'utes') {
+      window.location.href = 'utes.html';
+      return;
+    }
     document.getElementById(`panel-${n.dataset.panel}`).classList.add('active');
   });
 });

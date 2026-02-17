@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utah Utes Hub - Schedule, Stats & Rivalry</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #cc0000 0%, #8b0000 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 3px solid #fff;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #fff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+        }
+
+        .schedule-item, .odds-item, .score-item, .tweet-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #fff;
+        }
+
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .game-date {
+            font-weight: bold;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .opponent {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .game-time {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .sport-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .odds-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .odds-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .odds-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .year {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .score {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .win {
+            color: #00ff00;
+        }
+
+        .loss {
+            color: #ff6b6b;
+        }
+
+        .tweet-item {
+            border-left-color: #1da1f2;
+        }
+
+        .tweet-author {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1da1f2;
+        }
+
+        .tweet-content {
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .tweet-time {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .rivalry-section {
+            grid-column: 1 / -1;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .rivalry-section h2 {
+            color: #ffd700;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to JMO Universe</a>
+
+        <header>
+            <h1>🏈 Utah Utes Hub 🏀</h1>
+            <p class="subtitle">Schedules • Odds • Rivalry • Social Buzz</p>
+        </header>
+
+        <div class="grid">
+            <!-- Upcoming Schedules -->
+            <div class="card">
+                <h2>📅 Upcoming Games</h2>
+                <div id="schedule-container">
+                    <div class="loading">Loading schedules...</div>
+                </div>
+            </div>
+
+            <!-- 2026 Season Odds -->
+            <div class="card">
+                <h2>📊 2026 Season Odds</h2>
+                <div id="odds-container">
+                    <div class="odds-item">
+                        <span class="odds-label">🏈 Win Big 12 Championship</span>
+                        <span class="odds-value">+650</span>
+                    </div>
+                    <div class="odds-item">
+                        <span class="odds-label">🏈 Make College Football Playoff</span>
+                        <span class="odds-value">+450</span>
+                    </div>
+                    <div class="odds-item">
+                        <span class="odds-label">🏈 Regular Season Win Total</span>
+                        <span class="odds-value">O/U 8.5</span>
+                    </div>
+                    <div class="odds-item">
+                        <span class="odds-label">🏀 Win Big 12 Championship</span>
+                        <span class="odds-value">+1200</span>
+                    </div>
+                    <div class="odds-item">
+                        <span class="odds-label">🏀 Make NCAA Tournament</span>
+                        <span class="odds-value">+180</span>
+                    </div>
+                    <div class="odds-item">
+                        <span class="odds-label">🏀 Regular Season Win Total</span>
+                        <span class="odds-value">O/U 21.5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BYU vs Utah Rivalry -->
+            <div class="card rivalry-section">
+                <h2>⚔️ Holy War History (Last 25 Years)</h2>
+                <div id="rivalry-container">
+                    <div class="score-item">
+                        <span class="year">2024</span>
+                        <span class="score win">Utah 22 - BYU 21 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2023</span>
+                        <span class="score loss">Utah 24 - BYU 27</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2022</span>
+                        <span class="score loss">Utah 20 - BYU 26</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2021</span>
+                        <span class="score win">Utah 26 - BYU 17 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2019</span>
+                        <span class="score win">Utah 30 - BYU 12 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2018</span>
+                        <span class="score win">Utah 35 - BYU 7 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2017</span>
+                        <span class="score win">Utah 19 - BYU 13 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2016</span>
+                        <span class="score loss">Utah 19 - BYU 20</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2015</span>
+                        <span class="score win">Utah 35 - BYU 28 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2014</span>
+                        <span class="score loss">Utah 20 - BYU 35</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2013</span>
+                        <span class="score win">Utah 20 - BYU 13 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2012</span>
+                        <span class="score win">Utah 24 - BYU 21 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2011</span>
+                        <span class="score win">Utah 54 - BYU 10 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2010</span>
+                        <span class="score loss">Utah 7 - BYU 17</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2009</span>
+                        <span class="score win">Utah 26 - BYU 23 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2008</span>
+                        <span class="score win">Utah 48 - BYU 24 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2007</span>
+                        <span class="score loss">Utah 17 - BYU 20</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2006</span>
+                        <span class="score loss">Utah 31 - BYU 33</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2005</span>
+                        <span class="score loss">Utah 21 - BYU 41</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2004</span>
+                        <span class="score win">Utah 52 - BYU 21 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2003</span>
+                        <span class="score win">Utah 3 - BYU 0 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2002</span>
+                        <span class="score loss">Utah 6 - BYU 26</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2001</span>
+                        <span class="score win">Utah 24 - BYU 21 ✓</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">2000</span>
+                        <span class="score loss">Utah 20 - BYU 34</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="year">1999</span>
+                        <span class="score loss">Utah 20 - BYU 35</span>
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(255, 215, 0, 0.2); border-radius: 8px; text-align: center;">
+                        <strong>Series Record (Last 25): Utah 14 - BYU 11</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trending Utes Posts -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2>🔥 Trending Utes Social Posts</h2>
+                <div id="social-container">
+                    <div class="tweet-item">
+                        <div class="tweet-author">@Utah_Football</div>
+                        <div class="tweet-content">Big 12 ready! The Utes are bringing championship mentality to every game this season. 🔴⚪️ #GoUtes</div>
+                        <div class="tweet-time">2 hours ago</div>
+                    </div>
+                    <div class="tweet-item">
+                        <div class="tweet-author">@UteZone</div>
+                        <div class="tweet-content">Breaking: Utah lands 4-star recruit! The talent pipeline continues to flow into Salt Lake City. 🎯</div>
+                        <div class="tweet-time">5 hours ago</div>
+                    </div>
+                    <div class="tweet-item">
+                        <div class="tweet-author">@Utah_Basketball</div>
+                        <div class="tweet-content">Huntsman Center was ELECTRIC tonight! Thanks to the best fans in college basketball. 🏀🔥</div>
+                        <div class="tweet-time">1 day ago</div>
+                    </div>
+                    <div class="tweet-item">
+                        <div class="tweet-author">@UtahAthletics</div>
+                        <div class="tweet-content">Student-athletes excelling in the classroom and on the field. Proud to be a Ute! 🎓⚡️</div>
+                        <div class="tweet-time">1 day ago</div>
+                    </div>
+                    <p style="margin-top: 15px; opacity: 0.7; font-size: 0.9rem; text-align: center;">
+                        Live social feed requires Twitter API integration • Currently showing sample posts
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load schedules
+        function loadSchedules() {
+            const scheduleContainer = document.getElementById('schedule-container');
+
+            // Sample upcoming games - in production, this would fetch from an API
+            const upcomingGames = [
+                { sport: '🏈', date: 'Sep 6, 2026', opponent: 'vs Oklahoma State', time: '7:00 PM MT' },
+                { sport: '🏈', date: 'Sep 13, 2026', opponent: '@ TCU', time: '6:30 PM MT' },
+                { sport: '🏈', date: 'Sep 20, 2026', opponent: 'vs Arizona', time: '8:00 PM MT' },
+                { sport: '🏈', date: 'Sep 27, 2026', opponent: '@ Kansas', time: '2:00 PM MT' },
+                { sport: '🏈', date: 'Oct 4, 2026', opponent: 'vs BYU', time: '7:30 PM MT' },
+                { sport: '🏀', date: 'Nov 10, 2026', opponent: 'vs Colorado', time: '8:00 PM MT' },
+                { sport: '🏀', date: 'Nov 15, 2026', opponent: '@ Arizona State', time: '9:00 PM MT' },
+                { sport: '🏀', date: 'Nov 22, 2026', opponent: 'vs Baylor', time: '7:00 PM MT' },
+            ];
+
+            scheduleContainer.innerHTML = upcomingGames.map(game => `
+                <div class="schedule-item">
+                    <div>
+                        <div class="game-date">${game.date}</div>
+                        <div class="opponent"><span class="sport-tag">${game.sport}</span>${game.opponent}</div>
+                    </div>
+                    <div class="game-time">${game.time}</div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        loadSchedules();
+
+        // In a production environment, you would:
+        // 1. Fetch real schedule data from ESPN API or similar
+        // 2. Fetch current odds from a sports betting API
+        // 3. Integrate Twitter API for live social feed
+        // 4. Update scores from a sports data provider
+    </script>
+</body>
+</html>
