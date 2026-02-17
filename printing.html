@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Printing Hub - Idea Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            margin-bottom: 40px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        /* 3D Printer */
+        .printer-section {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .printer-container {
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .printer {
+            width: 200px;
+            height: 240px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .printer-frame {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #444, #222);
+            border-radius: 8px;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                inset 0 2px 4px rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .printer-head {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 20px;
+            background: linear-gradient(145deg, #ff6b6b, #ee5a52);
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.5);
+            animation: printHead 3s ease-in-out infinite;
+        }
+
+        @keyframes printHead {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            25% { transform: translateX(20px) translateY(0); }
+            50% { transform: translateX(20px) translateY(50px); }
+            75% { transform: translateX(-80px) translateY(50px); }
+        }
+
+        .printer-bed {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 8px;
+            background: linear-gradient(145deg, #888, #555);
+            border-radius: 2px;
+        }
+
+        .print-object {
+            position: absolute;
+            bottom: 38px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            border-radius: 8px;
+            animation: printing 3s ease-in-out infinite;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        @keyframes printing {
+            0% { transform: translateX(-50%) scale(0); opacity: 0; }
+            50% { transform: translateX(-50%) scale(0.5); opacity: 0.5; }
+            100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
+
+        .printer-light {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 8px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff88;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .printer-status {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: #00ff88;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Ideas Section */
+        .ideas-section {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .current-idea {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .idea-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
+        }
+
+        .idea-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .idea-category {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .idea-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+
+        .generate-btn {
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4);
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(255, 107, 107, 0.6);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Ideas Grid */
+        .ideas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .idea-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .idea-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-category {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .printer {
+                width: 150px;
+                height: 180px;
+            }
+
+            .idea-text {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">
+            <span>←</span>
+            <span>Back to Hub</span>
+        </a>
+
+        <header>
+            <h1>🖨️ 3D PRINTING HUB</h1>
+            <p class="subtitle">Your Infinite Source of Print Ideas</p>
+        </header>
+
+        <div class="main-content">
+            <div class="printer-section">
+                <div class="printer-container">
+                    <div class="printer">
+                        <div class="printer-frame">
+                            <div class="printer-light"></div>
+                            <div class="printer-head"></div>
+                            <div class="printer-bed"></div>
+                            <div class="print-object"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="printer-status">READY TO PRINT</div>
+            </div>
+
+            <div class="ideas-section">
+                <div class="current-idea">
+                    <div class="idea-icon" id="ideaIcon">🎲</div>
+                    <div class="idea-category" id="ideaCategory">CLICK TO GENERATE</div>
+                    <div class="idea-text" id="ideaText">Click the button below for your next amazing print idea!</div>
+                    <div class="idea-description" id="ideaDescription">Let the creativity flow...</div>
+                </div>
+                <button class="generate-btn" onclick="generateIdea()">Generate Idea</button>
+            </div>
+        </div>
+
+        <div class="ideas-grid" id="recentIdeas"></div>
+    </div>
+
+    <script>
+        const printIdeas = [
+            // Fun
+            { icon: '🦖', category: 'FUN', title: 'T-Rex Taco Holder', description: 'A dinosaur that holds your tacos upright. Because why not?' },
+            { icon: '🎮', category: 'FUN', title: 'Retro Game Cartridge Coasters', description: 'Protect surfaces with nostalgic style.' },
+            { icon: '🎸', category: 'FUN', title: 'Mini Guitar Pick Holder', description: 'Keep your picks organized in a tiny guitar case.' },
+            { icon: '🚀', category: 'FUN', title: 'Desktop Rocket Ship', description: 'A sleek rocket for your desk that doubles as a pen holder.' },
+            { icon: '🦄', category: 'FUN', title: 'Unicorn Planter', description: 'Magical home for your succulents.' },
+
+            // Silly
+            { icon: '🥔', category: 'SILLY', title: 'Potato Praise Trophy', description: 'Award for the most potato-like achievement.' },
+            { icon: '👽', category: 'SILLY', title: 'Alien Abduction Lamp', description: 'UFO beam lifts a tiny cow. Light included.' },
+            { icon: '🧙', category: 'SILLY', title: 'Wizard Hat for Cats', description: 'Your cat will love this (narrator: they won\'t).' },
+            { icon: '🦞', category: 'SILLY', title: 'Lobster Phone Holder', description: 'Because Salvador Dalí would approve.' },
+            { icon: '🎩', category: 'SILLY', title: 'Top Hat for Your Router', description: 'Make your WiFi classy.' },
+            { icon: '🐙', category: 'SILLY', title: 'Octopus Cable Organizer', description: 'Eight arms to hold all your cables in chaos.' },
+            { icon: '🍕', category: 'SILLY', title: 'Pizza Slice Phone Stand', description: 'The cheesiest way to hold your phone.' },
+
+            // Nerdy
+            { icon: '⚛️', category: 'NERDY', title: 'Atom Model Desk Toy', description: 'Spin electrons around a nucleus. Science!' },
+            { icon: '🎲', category: 'NERDY', title: 'Custom D20 Dice Tower', description: 'Roll with advantage every time.' },
+            { icon: '🤖', category: 'NERDY', title: 'Arduino Project Case', description: 'Professional housing for your electronics.' },
+            { icon: '📡', category: 'NERDY', title: 'Raspberry Pi Satellite Dish', description: 'Miniature dish for your mini computer.' },
+            { icon: '🔬', category: 'NERDY', title: 'Microscope Specimen Slides', description: 'Custom slides for your mad scientist lab.' },
+            { icon: '⚡', category: 'NERDY', title: 'Tesla Coil Sculpture', description: 'Miniature tribute to the master of electricity.' },
+            { icon: '🧬', category: 'NERDY', title: 'DNA Double Helix Model', description: 'Show off your genetic knowledge.' },
+            { icon: '🛸', category: 'NERDY', title: 'Spaceship Model Kit', description: 'Assemble your own sci-fi fleet.' },
+
+            // Interesting/Useful
+            { icon: '🔑', category: 'USEFUL', title: 'Magnetic Key Holder', description: 'Never lose your keys again.' },
+            { icon: '📱', category: 'USEFUL', title: 'Modular Phone Stand', description: 'Adjustable angles for perfect viewing.' },
+            { icon: '🎧', category: 'USEFUL', title: 'Headphone Hanger', description: 'Wall-mounted storage for your cans.' },
+            { icon: '📐', category: 'USEFUL', title: 'Parametric Box Generator', description: 'Custom boxes for any storage need.' },
+            { icon: '🔧', category: 'USEFUL', title: 'Tool Organizer', description: 'Keep your workspace tidy.' },
+            { icon: '🌱', category: 'USEFUL', title: 'Self-Watering Planter', description: 'Smart design keeps plants hydrated.' },
+            { icon: '💡', category: 'USEFUL', title: 'Cable Management Clips', description: 'Tame the wire jungle on your desk.' },
+            { icon: '🎨', category: 'INTERESTING', title: 'Geometric Art Sculpture', description: 'Mathematical beauty for your shelf.' },
+            { icon: '🏛️', category: 'INTERESTING', title: 'Mini Architecture Models', description: 'Famous buildings in miniature.' },
+            { icon: '🗿', category: 'INTERESTING', title: 'Easter Island Head Pencil Holder', description: 'Moai mystery meets office supplies.' },
+            { icon: '🦴', category: 'INTERESTING', title: 'Anatomical Heart Vase', description: 'Gothic elegance for your flowers.' },
+            { icon: '🎭', category: 'INTERESTING', title: 'Theater Mask Bookends', description: 'Comedy and tragedy hold your books.' },
+            { icon: '🔮', category: 'INTERESTING', title: 'Crystal Ball Night Light', description: 'Mystical ambiance for any room.' },
+            { icon: '⚙️', category: 'INTERESTING', title: 'Moving Gear Kinetic Art', description: 'Mesmerizing mechanical sculpture.' },
+        ];
+
+        let currentIdea = null;
+        let recentIdeas = [];
+
+        function generateIdea() {
+            // Pick random idea
+            currentIdea = printIdeas[Math.floor(Math.random() * printIdeas.length)];
+
+            // Update display
+            document.getElementById('ideaIcon').textContent = currentIdea.icon;
+            document.getElementById('ideaCategory').textContent = currentIdea.category;
+            document.getElementById('ideaText').textContent = currentIdea.title;
+            document.getElementById('ideaDescription').textContent = currentIdea.description;
+
+            // Add to recent ideas
+            if (!recentIdeas.find(i => i.title === currentIdea.title)) {
+                recentIdeas.unshift(currentIdea);
+                if (recentIdeas.length > 6) recentIdeas.pop();
+                updateRecentIdeas();
+            }
+
+            // Animate
+            const ideaSection = document.querySelector('.current-idea');
+            ideaSection.style.animation = 'none';
+            setTimeout(() => {
+                ideaSection.style.animation = 'fadeIn 0.5s ease';
+            }, 10);
+        }
+
+        function updateRecentIdeas() {
+            const grid = document.getElementById('recentIdeas');
+            grid.innerHTML = recentIdeas.map(idea => `
+                <div class="idea-card" onclick="selectIdea('${idea.title}')">
+                    <div class="card-icon">${idea.icon}</div>
+                    <div class="card-title">${idea.title}</div>
+                    <div class="card-category">${idea.category}</div>
+                </div>
+            `).join('');
+        }
+
+        function selectIdea(title) {
+            const idea = printIdeas.find(i => i.title === title);
+            if (idea) {
+                currentIdea = idea;
+                document.getElementById('ideaIcon').textContent = idea.icon;
+                document.getElementById('ideaCategory').textContent = idea.category;
+                document.getElementById('ideaText').textContent = idea.title;
+                document.getElementById('ideaDescription').textContent = idea.description;
+            }
+        }
+
+        // Add fadeIn animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Generate initial idea on load
+        setTimeout(() => generateIdea(), 500);
+    </script>
+</body>
+</html>

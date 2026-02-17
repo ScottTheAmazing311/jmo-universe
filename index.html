@@ -624,6 +624,11 @@ document.querySelectorAll('.hub-node').forEach(n => {
       window.location.href = 'utes.html';
       return;
     }
+    // Redirect 3D Printing Hub to idea generator
+    if (n.dataset.panel === 'printing') {
+      window.location.href = 'printing.html';
+      return;
+    }
     document.getElementById(`panel-${n.dataset.panel}`).classList.add('active');
   });
 });
